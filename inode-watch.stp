@@ -1,0 +1,15 @@
+// usage: # stat -c '%D %i' FILENAME
+//        X0Y Z
+//        # stap inode-watch.stp X Y Z
+
+probe kernel.function("vfs_write"),
+      kernel.function("vfs_read")
+{
+  dev_nr = $file->f_dentry->d_inode->i_sb->s_dev;
+  inode_nr = $file->f_dentry->d_inode->i_ino
+
+  if(dev_nr == ($1 << 20 | $2)  // major/minor device
+     && inode_nr == $3)
+    printf("%s %s(%d) %s0c%x/%u\n",
+           ctime(gettimeofday_s()), execname(), pid(), probefunc(), dev_nr, inode_nr);
+}

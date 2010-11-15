@@ -1,0 +1,55 @@
+probe module("dm_multipath").function("fail_path") {
+  //if(execname() != "swapper") {
+    // $pgpath->path->dev->name
+    // $pgpath->path->is_active
+    printf("%s ", ctime(gettimeofday_s()+32400));
+    //printf("%s(%d:%d) fail_path Called. %s is %d(1:active)\n",
+    printf("%s(%d:%d) fail_path Called.\n",
+        execname(), pid(), tid());
+    print_backtrace();
+  //}
+}
+
+probe module("dm_multipath").function("do_end_io") {
+  if(execname() != "swapper") {
+    printf("%s ", ctime(gettimeofday_s()+32400));
+    printf("%s(%d:%d) do_end_io Called.\n",
+        execname(), pid(), tid());
+    //print_backtrace();
+  }
+}
+
+probe module("dm_multipath").function("multipath_message") {
+  if(execname() != "swapper") {
+    printf("%s ", ctime(gettimeofday_s()+32400));
+    printf("%s(%d:%d) multipath_message Called.\n",
+        execname(), pid(), tid());
+    //print_backtrace();
+  }
+}
+
+probe module("dm_multipath").function("pg_init_done") {
+  if(execname() != "swapper") {
+    printf("%s ", ctime(gettimeofday_s()+32400));
+    printf("%s(%d:%d) pg_init_done Called.\n",
+        execname(), pid(), tid());
+    //print_backtrace();
+  }
+}
+
+probe module("dm_multipath").function("dm_pg_init_complete") {
+  if(execname() != "swapper") {
+    printf("%s ", ctime(gettimeofday_s()+32400));
+    printf("%s(%d:%d) dm_pg_init_complete Called.\n",
+        execname(), pid(), tid());
+    //print_backtrace();
+  }
+}
+
+probe begin {
+    printf("\n")
+    printf("------------------------------------------------------\n")
+    printf("%s Start Monitoring\n", ctime(gettimeofday_s()+32400))
+    printf("------------------------------------------------------\n")
+}
+

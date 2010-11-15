@@ -1,0 +1,19 @@
+probe module("bonding").function("bond_send_gratuitous_arp") {
+  printf("%s ", ctime(gettimeofday_s()+32400));
+  printf("%s(%d) %s called.\n", execname(), pid(), probefunc());
+  print_backtrace();
+}
+
+probe begin {
+  printf("\n");
+  printf("----------------------------------------------------------------------\n");
+  printf("%s Start Monitoring\n", ctime(gettimeofday_s()+32400));
+  printf("----------------------------------------------------------------------\n");
+}
+
+probe end {
+  printf("\n");
+  printf("----------------------------------------------------------------------\n");
+  printf("%s Stop Monitoring\n", ctime(gettimeofday_s()+32400));
+  printf("----------------------------------------------------------------------\n");
+}

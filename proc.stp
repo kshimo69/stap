@@ -1,0 +1,6 @@
+// Hook *proc*
+probe kernel.function("*proc*") {
+  if(execname() == "ls"){
+	printf("[%d]:%s: Call %s\n",tid(), execname(), probefunc());
+  }
+}

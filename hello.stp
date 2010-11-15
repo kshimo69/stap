@@ -1,0 +1,4 @@
+probe begin {
+  printf("hello world\n");
+  printf("%d\n", gettimeofday_s());
+}

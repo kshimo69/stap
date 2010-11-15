@@ -1,0 +1,12 @@
+#
+# usage: stap xxx.stp -x process_ID
+#        or
+#        stap xxx.stp -c command
+#
+#        process_ID or command as target()
+#
+
+probe syscall.* {
+	if (pid() == target())
+		printf("%s\n", name)
+}
