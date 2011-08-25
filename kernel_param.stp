@@ -1,0 +1,22 @@
+#!/usr/bin/stap
+
+probe kernel.function("do_proc_dointvec_userhz_jiffies_conv")
+{
+	printf(" IN: lvalp = %d, valp = %d\n",
+		kernel_long($lvalp),
+		kernel_int($valp))
+}
+
+probe kernel.function("do_proc_dointvec_userhz_jiffies_conv").return
+{
+	printf("OUT: lvalp = %d, valp = %d\n",
+		kernel_long($lvalp),
+		kernel_int($valp))
+}
+
+probe kernel.function("do_proc_dointvec")
+{
+	if (kernel_string($table->procname) == "locktime") {
+		printf("data = %d\n", kernel_int($table->data))
+	}
+}

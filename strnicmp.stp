@@ -1,0 +1,6 @@
+#!/usr/bin/stap
+
+probe kernel.function("strnicmp") {
+  printf("%s, %s, %d\n", kernel_string($s1), kernel_string($s2), $len);
+
+}

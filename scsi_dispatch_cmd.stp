@@ -1,0 +1,16 @@
+probe module("scsi_mod").function("scsi_dispatch_cmd"){
+#probe module("scsi_mod").statement("*@drivers/scsi/scsi.c:553"){  // for 2.6.18-164.el5 or 2.6.18-164.15.1.el5
+//probe module("scsi_mod").statement("*@drivers/scsi/scsi.c:555"){  // for 2.6.18-164.el5 or 2.6.18-164.15.1.el5
+
+	process = execname()
+	if (process == "dd"){
+		sector = $cmd->request->bio->bi_sector
+		nsect = $cmd->request->bio->bi_size / 512
+
+
+
+		printf("S  %s    sn=%d <%03d:%03d:%03d:%03d> #%12d:%d [%d]\n",
+			ctime(gettimeofday_s()), $cmd->serial_number, $cmd->device->host->host_no, $cmd->device->channel, $cmd->device->id, $cmd->device->lun,
+			sector, nsect, gettimeofday_us());
+	}
+}

@@ -1,0 +1,46 @@
+#!/usr/bin/stap -vvv
+probe begin {
+  printf("\n");
+  printf("------------------------------------------------------\n")
+  printf("%s Start Monitoring\n", ctime(gettimeofday_s()+32400))
+  printf("------------------------------------------------------\n")
+}
+
+probe kernel.function("submit_bio") {
+  if(execname() != "swapper") {
+    char disk = kernel_string($bio->bi_bdev->bd_disk->disk_name)
+    if (disk == "dm-2" || disk == "dm-3") {
+//    if($rw == 2) {
+// #define READ 0
+// #define WRITE 1
+// #define READA 2         /* read-ahead  - don't block if no resources */
+// #define SWRITE 3        /* for ll_rw_block() - wait for buffer lock */
+// #define SPECIAL 4       /* For non-blockdevice requests in request queue */
+// #define READ_SYNC       (READ | (1 << BIO_RW_SYNC))
+// #define WRITE_SYNC      (WRITE | (1 << BIO_RW_SYNC))
+// #define WRITE_BARRIER   ((1 << BIO_RW) | (1 << BIO_RW_BARRIER))
+      printf("%s ", ctime(gettimeofday_s()+32400))
+      printf("%s(%d:%d) %s Called.\n", execname(), pid(), tid(), probefunc())
+      printf("    ")
+      printf("disk=%s ", kernel_string($bio->bi_bdev->bd_disk->disk_name))
+      printf("rw=%d ", $rw)
+      printf("bi_rw=%d ", $bio->bi_rw)
+      //printf("ra_pages=%d ", $bio->bi_bdev->bd_inode_backing_dev_info->ra_pages)
+      //printf("bio_sectors=%d ", $bio->bi_size >> 9)
+      //printf("bi_size=%d ", $bio->bi_size)
+      //printf("bi_hw_segments=%d ", $bio->bi_hw_segments)
+      printf("\n")
+//    }
+    }
+  }
+}
+
+probe module("loop").function("loop_make_request") {
+  if(execname() != "swapper") {
+    printf("%s ", ctime(gettimeofday_s()+32400))
+    printf("%s(%d:%d) %s Called.\n", execname(), pid(), tid(), probefunc())
+    printf("    ")
+    printf("bi_rw=%d ", $old_bio->bi_rw)
+    printf("\n")
+  }
+}

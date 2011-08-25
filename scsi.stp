@@ -1,0 +1,9 @@
+
+probe kernel.function("elv_insert") {
+  if(execname() != "swapper") {
+    printf("%s ", ctime(gettimeofday_s()+32400))
+    printf("%s(%d:%d) %s Called.\n", execname(), pid(), tid(), probefunc())
+//    printf("    ")
+//    printf("\n")
+  }
+}

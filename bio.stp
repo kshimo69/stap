@@ -1,0 +1,33 @@
+probe kernel.function("submit_bio") {
+  if(execname() != "swapper") {
+    int major = $bio->bi_bdev->bd_disk->major
+    int minor = $bio->bi_bdev->bd_disk->first_minor
+    if(!(major == 253 && minor == 0)) {  // dm-0(253:0) is system
+      printf("%s ", ctime(gettimeofday_s()+32400))
+      printf("%s(%d:%d) %s Called.\n", execname(), pid(), tid(), probefunc())
+      printf("disk=%s ", kernel_string($bio->bi_bdev->bd_disk->disk_name))
+      printf("bi_flags=%d ", $bio->bi_flags)
+      printf("bi_rw=%d ", $bio->bi_rw)
+      printf("bio_sectors=%d ", $bio->bi_size >> 9)
+      printf("\n")
+    }
+  }
+}
+
+probe kernel.function("bio_endio") {
+  if(execname() != "swapper") {
+    int major = $bio->bi_bdev->bd_disk->major
+    int minor = $bio->bi_bdev->bd_disk->first_minor
+    if(major == 253 && minor == 3) {  // dm-3(253:3)
+      printf("%s ", ctime(gettimeofday_s()+32400))
+      printf("%s(%d:%d) %s Called.\n", execname(), pid(), tid(), probefunc())
+      printf("disk=%s ", kernel_string($bio->bi_bdev->bd_disk->disk_name))
+      printf("bi_flags=%d ", $bio->bi_flags)
+      printf("bi_rw=%d ", $bio->bi_rw)
+      printf("bio_sectors=%d ", $bio->bi_size >> 9)
+      printf("\n")
+      printf("%d bytes done. with error %d ", $bytes_done, $error)
+      printf("\n")
+    }
+  }
+}
