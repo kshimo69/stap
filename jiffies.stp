@@ -1,0 +1,10 @@
+#!/usr/bin/stap -vg
+%{
+#include <linux/jiffies.h>
+%}
+function get_jiffies() %{
+    THIS->__retvalue = jiffies;
+%}
+probe timer.s(1) {
+    printf("jiffies = %d\n", get_jiffies())
+}
