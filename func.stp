@@ -1,0 +1,20 @@
+#!/usr/bin/stap
+
+# usage: stap -vvv func.stp 'kernel.function("end_buffer_async_read")'
+
+probe begin {
+  printf("\n")
+}
+
+probe $1 {
+  printf("%s %s() called pid=%d, pname=%s\n", ctime(gettimeofday_s()+32400), probefunc(), pid(), execname())
+  printf("vars: %s\n", $$vars)
+  printf("locals: %s\n", $$locals)
+  printf("\n")
+}
+probe $1.return {
+  printf("%s %s() leave  pid=%d, pname=%s, return=%s\n", ctime(gettimeofday_s()+32400), probefunc(), pid(), execname(), $$return)
+  printf("vars: %s\n", $$vars)
+  printf("locals: %s\n", $$locals)
+  printf("\n")
+}
